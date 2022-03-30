@@ -1,0 +1,34 @@
+{
+    "name": "router",
+    "version": "1.0.0",
+    "description": "Router for service payments",
+    "author": "jhtrigo@bg.com.bo",
+    "main": "index.js",
+    "scripts": {
+        "start": "node index.js",
+        "dev": "nodemon index.js",
+        "test": "mocha specs/unit/*.spec.js --timeout 15000"
+    },
+    "dependencies": {
+        "ajv": "^8.0.1",
+        "ajv-errors": "^3.0.0",
+        "ajv-formats": "^2.0.1",
+        "awilix": "^4.3.3",
+        "axios": "^0.21.1",
+        "chai": "^4.2.0",
+        "cors": "^2.8.5",
+        "dotenv": "^8.2.0",
+        "express": "^4.17.1",
+        "mongodb": "^3.6.6",
+        "mongoose": "^5.13.0",
+        "swagger-ui-express": "^4.1.6",
+        "underscore": "^1.13.1",
+        "uuid": "^8.3.2"
+    },
+    "devDependencies": {
+        "chai-http": "^4.3.0",
+        "mocha": "^8.2.1",
+        "nodemon": "^2.0.6",
+        "node-mocks-http": "^1.10.1"
+    }
+}
