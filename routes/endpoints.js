@@ -15,7 +15,7 @@ container.register({
   1: awilix.asClass(OdooController), // ODOO
 })
 
-router.post('/api/v1/login', async (req, res) => {
+router.post('/login', async (req, res) => {
   let result
   try {
     result = await container.resolve(req.body.data.serviceId).login(req, res)
@@ -29,7 +29,7 @@ router.post('/api/v1/login', async (req, res) => {
   res.send(result)
 })
 
-router.post('/api/v1/projects', async (req, res) => {
+router.post('/projects', async (req, res) => {
   let result
   try {
     result = await container.resolve(req.body.data.serviceId).projects(req, res)
