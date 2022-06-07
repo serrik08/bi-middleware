@@ -1,12 +1,11 @@
-const express = require('express');
-const cors = require('cors');
-const config = require('./util/config')
+const express = require("express");
+const cors = require("cors");
+const config = require("./util/config");
 
-const swaggerUi = require('swagger-ui-express'),
-  swaggerDocument = require('./swagger.json');
+const swaggerUi = require("swagger-ui-express"),
+  swaggerDocument = require("./swagger.json");
 
 class Server {
-
   constructor() {
     this.app = express();
     this.port = config.port;
@@ -32,21 +31,19 @@ class Server {
   }
 
   routes() {
-    this.app.use('/', require('./routes'));
+    this.app.use("/", require("./routes"));
   }
 
   listen() {
-
     this.app.use(
-      '/api-docs',
+      "/api-docs",
       swaggerUi.serve,
       swaggerUi.setup(swaggerDocument)
     );
 
     this.app.listen(this.port, () => {
-      console.log('Server running on port', this.port);
+      console.log("Server running on port", this.port);
     });
-
   }
 }
 
