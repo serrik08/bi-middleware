@@ -17,16 +17,17 @@ transport.on("rotate", function (oldFilename, newFilename) {
 const logFormat = winston.format.combine(
   //winston.format.colorize(),
   winston.format.timestamp({
+    //format: "hh:mm:ss",
     format: "YYYY-MM-DD hh:mm:ss",
   }),
   winston.format.align(),
   winston.format.printf(
     (info) =>
-      `[${info.timestamp}] [${info.method}] ${info.level}: ${info.message}`
+      `[${info.timestamp}] [${info.level}] ${info.method}: ${info.message}`
   )
 );
 
-module.exports = winston.createLogger({
+const logger = winston.createLogger({
   format: logFormat,
   transports: [new winston.transports.Console(), transport],
   exceptionHandlers: [
@@ -36,6 +37,8 @@ module.exports = winston.createLogger({
     new winston.transports.File({ filename: "logs/rejections.log" }),
   ],
 });
+
+module.exports = logger;
 
 // logger.info("hello", { method: "world" });
 // logger.error("Error message", { method: "world2" });

@@ -1,24 +1,35 @@
 const errorConstants = require("../../util/errorConstants");
 const config = require("../../util/config");
 const axios = require("axios");
+const logger = require("../../util/logger");
 
 const loginService = async (req, res) => {
+  logger.info("begin", { method: "loginServiceOdoo" });
+  logger.info("body service: "+JSON.stringify(req.body) , { method: "loginServiceOdoo" });
   try {
     await validateFields(req.body);
-    let parameters = prepareRequest(req.body);
+    let endpointLogin = `${config.odoo_service}/web/session/authenticate`;
+    logger.info("endpoint ext: "+endpointLogin , { method: "loginServiceOdoo" });
+    let parameters = await prepareRequest(req.body);    
     let resultService = await axios.post(
-      `${config.odoo_service}/web/session/authenticate`,
+      endpointLogin,
       parameters
     );
-    let result = prepareResponse(resultService);
+    logger.info("response ext: "+JSON.stringify(resultService.data) , { method: "loginServiceOdoo" });
+    let result = prepareResponse(resultService);   
+    logger.info("response service: "+JSON.stringify(result) , { method: "loginServiceOdoo" });
+    logger.info("end", { method: "loginServiceOdoo" });
     return result;
   } catch (error) {
-    return {
+    let res_error = {
       errCode: errorConstants.codeError,
       errMsg: error.message,
       data: [],
     };
+    logger.error(JSON.stringify(res_error), { method: "loginServiceOdoo" });
+    return res_error;
   }
+  
 };
 
 const validateFields = (body) => {
@@ -29,7 +40,7 @@ const validateFields = (body) => {
 };
 
 const prepareRequest = (body) => {
-  return {
+  let request = {
     jsonrpc: "2.0",
     params: {
       db: config.odoo_db,
@@ -37,6 +48,8 @@ const prepareRequest = (body) => {
       password: body.data.password,
     },
   };
+  logger.info("request ext: "+JSON.stringify(request) , { method: "loginServiceOdoo" });
+  return request;
 };
 
 const prepareResponse = (res) => {
@@ -56,7 +69,7 @@ const prepareResponse = (res) => {
   } else {
     result = {
       errCode: "0",
-      errMsg: ""
+      errMsg: "",
     };
     let user = {
       uid: response.result.uid.toString(),
@@ -64,11 +77,11 @@ const prepareResponse = (res) => {
       username: response.result.username,
       session_id: res.headers["set-cookie"][0].split(";")[0].substring(11), //get token
     };
-    Object.assign(result, {user});
+    Object.assign(result, { user });
   }
   return result;
 };
 
 module.exports = {
-  loginService: loginService
+  loginService: loginService,
 };

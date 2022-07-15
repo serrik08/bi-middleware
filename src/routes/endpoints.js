@@ -4,6 +4,7 @@ const awilix = require("awilix");
 const errorConstants = require("../util/errorConstants");
 const OdooController = require("../controllers/odooController");
 const router = Router();
+const logger = require("../util/logger");
 
 const jwt = require("jsonwebtoken");
 
@@ -18,25 +19,29 @@ container.register({
 });
 
 router.post("/login", async (req, res) => {
+  logger.info("begin" , { method: "login" });
   let result;
   try {
     result = await container.resolve(req.body.data.serviceId).login(req, res);
-    console.log(result);
+    //console.log(result);
     if (result.errCode === "0") {
       // Create JWT with user odoo response for authentication
       let token = await jwt.sign({ user: result.user }, "bi-app", {expiresIn: '30s'});
       res.json({ token });
+      logger.info(JSON.stringify({ token }) , { method: "login" });
     } else {
       res.send(result);
+      logger.error(JSON.stringify({ result }) , { method: "login" });
     }
   } catch (error) {
-    console.log("error: ", error);
     result = {
       errCode: errorConstants.codeError,
       errMsg: errorConstants.desError,
     };
     res.send(result);
+    logger.error(JSON.stringify({ result }) , { method: "login" });
   }
+  logger.info("end" , { method: "login" });
 });
 
 router.get("/projects", verifyToken, async (req, res) => {
