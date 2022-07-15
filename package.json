@@ -3,7 +3,7 @@
     "version": "1.0.0",
     "description": "Router for service payments",
     "author": "jhtrigo@bg.com.bo",
-    "main": "index.js",
+    "main": "src/index.js",
     "scripts": {
         "start": "node src/index.js",
         "dev": "nodemon src/index.js",
@@ -19,6 +19,7 @@
         "cors": "^2.8.5",
         "dotenv": "^8.2.0",
         "express": "^4.17.1",
+        "jsonwebtoken": "^8.5.1",
         "mongodb": "^3.6.6",
         "mongoose": "^5.13.0",
         "swagger-ui-express": "^4.1.6",

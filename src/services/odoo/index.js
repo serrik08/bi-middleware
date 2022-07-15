@@ -3,11 +3,8 @@ const errorConstants = require("../../util/errorConstants");
 const config = require("../../util/config");
 const axios = require("axios");
 
-const {
-  validateFieldsLogin,
-  prepareRequestLogin,
-  prepareResponseLogin,
-} = require("./loginService");
+const { loginService } = require("./loginService");
+
 const {
   validateFieldsProjects,
   prepareRequestProjects,
@@ -15,22 +12,7 @@ const {
 } = require("./projectsService");
 
 exports.login = async (req, res) => {
-  try {
-    validateFieldsLogin(req.body);
-    let parameters = prepareRequestLogin(req.body);
-    let resultService = await axios.post(
-      `${config.odoo_service}/web/session/authenticate`,
-      parameters
-    );
-    let result = prepareResponseLogin(resultService);
-    return result;
-  } catch (error) {
-    return {
-      errCode: errorConstants.codeError,
-      errMsg: error.message,
-      data: [],
-    };
-  }
+  return await loginService(req, res);
 };
 
 exports.projects = async (req, res) => {

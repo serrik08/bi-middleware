@@ -1,50 +1,110 @@
-const { Router } = require('express');
-const awilix = require('awilix')
+const { Router } = require("express");
+const awilix = require("awilix");
 //const tool = require('../src/util/tool');
-const errorConstants = require('../util/errorConstants');
-const OdooController = require('../controllers/odooController')
+const errorConstants = require("../util/errorConstants");
+const OdooController = require("../controllers/odooController");
 const router = Router();
+
+const jwt = require("jsonwebtoken");
 
 // Create the container and set the injectionMode to PROXY (which is also the default).
 const container = awilix.createContainer({
-  injectionMode: awilix.InjectionMode.PROXY
-})
+  injectionMode: awilix.InjectionMode.PROXY,
+});
 
 container.register({
   // Here we are telling Awilix how to resolve a
   1: awilix.asClass(OdooController), // ODOO
-})
+});
 
-router.post('/login', async (req, res) => {
-  let result
+router.post("/login", async (req, res) => {
+  let result;
   try {
-    result = await container.resolve(req.body.data.serviceId).login(req, res)
+    result = await container.resolve(req.body.data.serviceId).login(req, res);
+    console.log(result);
+    if (result.errCode === "0") {
+      // Create JWT with user odoo response for authentication
+      let token = await jwt.sign({ user: result.user }, "bi-app", {expiresIn: '30s'});
+      res.json({ token });
+    } else {
+      res.send(result);
+    }
   } catch (error) {
-    console.log("error: ", error)
+    console.log("error: ", error);
     result = {
       errCode: errorConstants.codeError,
       errMsg: errorConstants.desError,
-    }
+    };
+    res.send(result);
   }
-  res.send(result)
-})
+});
 
-router.post('/projects', async (req, res) => {
-  let result
+router.get("/projects", verifyToken, async (req, res) => {
+   jwt.verify(req.token, 'bi-app', async (err, authData) => {
+    if (err) {
+      res.sendStatus(403);
+    } else {
+      let result;
+      console.log(authData);
+      try {    
+        res.json({
+          errCode: '0',
+          errMsg: '',
+          authData
+        })
+        // result = await container
+        //   .resolve(req.body.data.serviceId)
+        //   .projects(req, res);
+      } catch (error) {
+        console.log("error: ", error);
+        result = {
+          errCode: errorConstants.codeError,
+          errMsg: errorConstants.desError,
+        };
+        res.send(result);
+      }      
+    }
+  })
+  
+});
+
+// Verify token
+function verifyToken(req, res, next) {
+  // Get auth header token
+  const bearerHeader = req.headers["authorization"];
+  // Check if bearer is undefined
+  if (typeof bearerHeader !== "undefined") {
+    // Split at the space
+    const bearer = bearerHeader.split(' ');
+    // Get the token from array
+    const bearerToken = bearer[1];
+    // Set the token
+    req.token = bearerToken;
+    // Next middleware
+    next();
+  } else {
+    // Forbidden
+    res.sendStatus(403);
+  }
+}
+
+router.post("/projects", async (req, res) => {
+  let result;
   try {
-    result = await container.resolve(req.body.data.serviceId).projects(req, res)
+    result = await container
+      .resolve(req.body.data.serviceId)
+      .projects(req, res);
   } catch (error) {
-    console.log("error: ", error)
+    console.log("error: ", error);
     result = {
       errCode: errorConstants.codeError,
       errMsg: errorConstants.desError,
-    }
+    };
   }
-  res.send(result)
-})
+  res.send(result);
+});
 
-
-router.post('/test', async (req, res) => {
+router.post("/test", async (req, res) => {
   let result;
   try {
     result = await container.resolve(req.body.data.serviceId).test(req, res);
@@ -54,7 +114,7 @@ router.post('/test', async (req, res) => {
       errMsg: errorConstants.desError,
     };
   }
-  res.send(result)
-})
+  res.send(result);
+});
 
 module.exports = router;
