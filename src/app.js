@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const config = require("./util/config");
+const logger = require("./util/logger");
 
 const swaggerUi = require("swagger-ui-express"),
   swaggerDocument = require("./swagger.json");
@@ -42,7 +43,7 @@ class Server {
     );
 
     this.app.listen(this.port, () => {
-      console.log("Server running on port", this.port);
+      logger.info("Server running on port "+ this.port , { method: Object.values(this)[0].name });
     });
   }
 }

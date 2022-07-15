@@ -3,10 +3,10 @@
     "version": "1.0.0",
     "description": "Router for service payments",
     "author": "jhtrigo@bg.com.bo",
-    "main": "src/index.js",
+    "main": "src/app.js",
     "scripts": {
-        "start": "node src/index.js",
-        "dev": "nodemon src/index.js",
+        "start": "node src/app.js",
+        "dev": "nodemon src/app.js",
         "test": "mocha specs/unit/*.spec.js --timeout 15000"
     },
     "dependencies": {
@@ -24,7 +24,9 @@
         "mongoose": "^5.13.0",
         "swagger-ui-express": "^4.1.6",
         "underscore": "^1.13.1",
-        "uuid": "^8.3.2"
+        "uuid": "^8.3.2",
+        "winston": "^3.8.1",
+        "winston-daily-rotate-file": "^4.7.1"
     },
     "devDependencies": {
         "chai-http": "^4.3.0",
