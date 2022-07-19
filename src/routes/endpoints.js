@@ -19,19 +19,21 @@ container.register({
 });
 
 router.post("/login", async (req, res) => {
-  logger.info("begin" , { method: "login" });
+  logger.info("begin", { method: "login" });
   let result;
   try {
     result = await container.resolve(req.body.data.serviceId).login(req, res);
     //console.log(result);
     if (result.errCode === "0") {
       // Create JWT with user odoo response for authentication
-      let token = await jwt.sign({ user: result.user }, "bi-app", {expiresIn: '30s'});
+      let token = await jwt.sign({ user: result.user }, "bi-app", {
+        expiresIn: "30m",
+      });
       res.json({ token });
-      logger.info(JSON.stringify({ token }) , { method: "login" });
+      logger.info(JSON.stringify({ token }), { method: "login" });
     } else {
       res.send(result);
-      logger.error(JSON.stringify({ result }) , { method: "login" });
+      logger.error(JSON.stringify({ result }), { method: "login" });
     }
   } catch (error) {
     result = {
@@ -39,27 +41,29 @@ router.post("/login", async (req, res) => {
       errMsg: errorConstants.desError,
     };
     res.send(result);
-    logger.error(JSON.stringify({ result }) , { method: "login" });
+    logger.error(JSON.stringify({ result }), { method: "login" });
   }
-  logger.info("end" , { method: "login" });
+  logger.info("end", { method: "login" });
 });
 
-router.get("/projects", verifyToken, async (req, res) => {
-   jwt.verify(req.token, 'bi-app', async (err, authData) => {
+router.post("/projects", verifyToken, async (req, res) => {
+  logger.info("begin", { method: "projects" });
+  jwt.verify(req.token, "bi-app", async (err, authData) => {
     if (err) {
       res.sendStatus(403);
+      logger.error(JSON.stringify({ err }), { method: "login" });
     } else {
       let result;
       console.log(authData);
-      try {    
-        res.json({
-          errCode: '0',
-          errMsg: '',
-          authData
-        })
-        // result = await container
-        //   .resolve(req.body.data.serviceId)
-        //   .projects(req, res);
+      try {
+        // res.json({
+        //   errCode: "0",
+        //   errMsg: "",
+        //   authData,
+        // });
+        result = await container.resolve(req.body.serviceId).projects(req, res);        
+        res.send(result);
+        logger.info("end", { method: "projects" });
       } catch (error) {
         console.log("error: ", error);
         result = {
@@ -67,10 +71,10 @@ router.get("/projects", verifyToken, async (req, res) => {
           errMsg: errorConstants.desError,
         };
         res.send(result);
-      }      
+        logger.error(JSON.stringify({ result }), { method: "login" });
+      }
     }
-  })
-  
+  });
 });
 
 // Verify token
@@ -80,7 +84,7 @@ function verifyToken(req, res, next) {
   // Check if bearer is undefined
   if (typeof bearerHeader !== "undefined") {
     // Split at the space
-    const bearer = bearerHeader.split(' ');
+    const bearer = bearerHeader.split(" ");
     // Get the token from array
     const bearerToken = bearer[1];
     // Set the token
@@ -93,21 +97,21 @@ function verifyToken(req, res, next) {
   }
 }
 
-router.post("/projects", async (req, res) => {
-  let result;
-  try {
-    result = await container
-      .resolve(req.body.data.serviceId)
-      .projects(req, res);
-  } catch (error) {
-    console.log("error: ", error);
-    result = {
-      errCode: errorConstants.codeError,
-      errMsg: errorConstants.desError,
-    };
-  }
-  res.send(result);
-});
+// router.post("/projects", async (req, res) => {
+//   let result;
+//   try {
+//     result = await container
+//       .resolve(req.body.data.serviceId)
+//       .projects(req, res);
+//   } catch (error) {
+//     console.log("error: ", error);
+//     result = {
+//       errCode: errorConstants.codeError,
+//       errMsg: errorConstants.desError,
+//     };
+//   }
+//   res.send(result);
+// });
 
 router.post("/test", async (req, res) => {
   let result;
