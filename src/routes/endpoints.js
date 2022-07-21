@@ -48,19 +48,15 @@ router.post("/login", async (req, res) => {
 
 router.post("/projects", verifyToken, async (req, res) => {
   logger.info("begin", { method: "projects" });
-  jwt.verify(req.header('Authorization'), "bi-app", async (err, authData) => {
+  let jwtToken = getJwtToken(req.token||req.header('Authorization'));
+  jwt.verify(jwtToken, "bi-app", async (err, authData) => {
     if (err) {
       res.sendStatus(403);
-      logger.error(JSON.stringify({ err }), { method: "login" });
+      logger.error(JSON.stringify({ err }), { method: "projects" });
     } else {
       let result;
       console.log(authData);
       try {
-        // res.json({
-        //   errCode: "0",
-        //   errMsg: "",
-        //   authData,
-        // });
         result = await container.resolve(req.body.serviceId).projects(req, res);        
         res.send(result);
         logger.info("end", { method: "projects" });
@@ -71,7 +67,34 @@ router.post("/projects", verifyToken, async (req, res) => {
           errMsg: errorConstants.desError,
         };
         res.send(result);
-        logger.error(JSON.stringify({ result }), { method: "login" });
+        logger.error(JSON.stringify({ result }), { method: "projects" });
+      }
+    }
+  });
+});
+
+router.post("/updatedata", verifyToken, async (req, res) => {
+  logger.info("begin", { method: "updatedata" });  
+  let jwtToken = getJwtToken(req.token||req.header('Authorization'));
+  jwt.verify(jwtToken, "bi-app", async (err, authData) => {
+    if (err) {
+      res.sendStatus(403);
+      logger.error(JSON.stringify({ err }), { method: "updatedata" });
+    } else {
+      let result;
+      console.log(authData);
+      try {
+        result = await container.resolve(req.body.serviceId).updatedata(req, res);        
+        res.send(result);
+        logger.info("end", { method: "updatedata" });
+      } catch (error) {
+        console.log("error: ", error);
+        result = {
+          errCode: errorConstants.codeError,
+          errMsg: errorConstants.desError,
+        };
+        res.send(result);
+        logger.error(JSON.stringify({ result }), { method: "updatedata" });
       }
     }
   });
@@ -95,6 +118,13 @@ function verifyToken(req, res, next) {
     // Forbidden
     res.sendStatus(403);
   }
+}
+
+function getJwtToken(tokenBearer) {
+  tokenBearer = tokenBearer.split(" ");
+  if (tokenBearer.length === 1)
+    return tokenBearer[0]
+  return tokenBearer[1]
 }
 
 // router.post("/projects", async (req, res) => {

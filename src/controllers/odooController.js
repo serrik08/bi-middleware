@@ -12,6 +12,11 @@ class OdooController {
     return result
   }
 
+  async updatedata(req, res) {
+    let result = await this.odooService.updatedata(req, res)
+    return result
+  }
+
   async projects(req, res) {
     let result = await this.odooService.projects(req, res)
     return result

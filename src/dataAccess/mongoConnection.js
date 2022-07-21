@@ -10,20 +10,8 @@ exports.saveMultiDocument = async (mongo_collection, data) => {
     const collection = db.collection(mongo_collection);
     await collection.insertMany(data);
     await client.close();
-    return {
-      errCode: "",
-      errMsg: "",
-      data: {
-        success: true,
-        description: data.length + " saved record(s)"
-      },
-    };
   } catch (e) {
-    return {
-      errCode: "MONGO",
-      errMsg: e,
-      data: null,
-    };
+    throw new Error(e);;
   }
 };
 
@@ -83,6 +71,19 @@ exports.saveDocument = async (mongo_collection, data) => {
     };
   } finally {
     //    await client.close();
+  }
+};
+
+exports.clearData = async (mongo_collection) => {
+  try {
+    const client = MongoClient(config.mongo_url, { useUnifiedTopology: true });
+    await client.connect();
+    const db = await client.db(config.mongo_db_name);
+    const collection = db.collection(mongo_collection);
+    await collection.deleteMany({});
+    await client.close();
+  } catch (e) {
+    throw new Error(e);
   }
 };
 
