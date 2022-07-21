@@ -21,6 +21,7 @@ const loginService = async (req, res) => {
     logger.info("end", { method: "loginServiceOdoo" });
     return result;
   } catch (error) {
+    console.log(error);
     let res_error = {
       errCode: errorConstants.codeError,
       errMsg: error.message,

@@ -48,7 +48,7 @@ router.post("/login", async (req, res) => {
 
 router.post("/projects", verifyToken, async (req, res) => {
   logger.info("begin", { method: "projects" });
-  jwt.verify(req.token, "bi-app", async (err, authData) => {
+  jwt.verify(req.header('Authorization'), "bi-app", async (err, authData) => {
     if (err) {
       res.sendStatus(403);
       logger.error(JSON.stringify({ err }), { method: "login" });
