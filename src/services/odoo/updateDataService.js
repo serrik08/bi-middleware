@@ -31,8 +31,7 @@ const updatedataService = async (req, res) => {
   } catch (error) {
     let res_error = {
       errCode: errorConstants.codeError,
-      errMsg: error.message,
-      data: [],
+      errMsg: error.message
     };
     logger.error(JSON.stringify(res_error), { method: "updatedataService" });
     return res_error;

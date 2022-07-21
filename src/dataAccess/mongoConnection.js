@@ -48,6 +48,29 @@ exports.getDocumentsIds = async (mongo_collection) => {
   }
 };
 
+exports.getDocuments = async (mongo_collection) => {
+  let res = [];
+  try {
+    const client = MongoClient(config.mongo_url, { useUnifiedTopology: true });
+    await client.connect();
+    const db = await client.db(config.mongo_db_name);
+    const collection = db.collection(mongo_collection);
+    const doQuery = new Promise((resolve, reject) => {
+      collection
+        .find({ }, { projection: { _id: 0 } })
+        .toArray(function (err, result) {
+          res = result;
+          resolve();
+        });
+    });
+    await doQuery;
+    await client.close();
+    return res;
+  } catch (err) {
+    return err;
+  }
+};
+
 exports.saveDocument = async (mongo_collection, data) => {
   try {
     const client = MongoClient(config.mongo_url, { useUnifiedTopology: true });

@@ -56,6 +56,25 @@ const projectsService = async (req, res) => {
   }
 };
 
+const getprojectsService = async (req, res) => {
+  logger.info("begin", { method: "getprojectsService" });
+  logger.info("body service: " + JSON.stringify(req.body), { method: "getprojectsService"  });
+  try {
+    let projects =  await connection.getDocuments("projects");
+    let result =  projects
+    logger.info("Result: "+JSON.stringify(result), { method: "getprojectsService" });
+    logger.info("end", { method: "getprojectsService" });
+    return result;
+  } catch (error) {
+    let res_error = {
+      errCode: errorConstants.codeError,
+      errMsg: error.message
+    };
+    logger.error(JSON.stringify(res_error), { method: "getprojectsService" });
+    return res_error;
+  }
+};
+
 const validateFields = (body) => {
   if (body.userOdoo === undefined || body.tokenOdoo === undefined)
     throw new Error("NO DATA| Campo usuario o token no definido");
@@ -65,4 +84,5 @@ const validateFields = (body) => {
 
 module.exports = {
   projectsService: projectsService,
+  getprojectsService: getprojectsService
 };

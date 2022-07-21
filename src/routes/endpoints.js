@@ -23,7 +23,6 @@ router.post("/login", async (req, res) => {
   let result;
   try {
     result = await container.resolve(req.body.data.serviceId).login(req, res);
-    //console.log(result);
     if (result.errCode === "0") {
       // Create JWT with user odoo response for authentication
       let token = await jwt.sign({ user: result.user }, "bi-app", {
@@ -95,6 +94,33 @@ router.post("/updatedata", verifyToken, async (req, res) => {
         };
         res.send(result);
         logger.error(JSON.stringify({ result }), { method: "updatedata" });
+      }
+    }
+  });
+});
+
+router.post("/getprojects", verifyToken, async (req, res) => {
+  logger.info("begin", { method: "getprojects" });  
+  let jwtToken = getJwtToken(req.token||req.header('Authorization'));
+  jwt.verify(jwtToken, "bi-app", async (err, authData) => {
+    if (err) {
+      res.sendStatus(403);
+      logger.error(JSON.stringify({ err }), { method: "getprojects" });
+    } else {
+      let result;
+      console.log(authData);
+      try {
+        result = await container.resolve(req.body.serviceId).getprojects(req, res);        
+        res.send(result);
+        logger.info("end", { method: "getprojects" });
+      } catch (error) {
+        console.log("error: ", error);
+        result = {
+          errCode: errorConstants.codeError,
+          errMsg: errorConstants.desError,
+        };
+        res.send(result);
+        logger.error(JSON.stringify({ result }), { method: "getprojects" });
       }
     }
   });
