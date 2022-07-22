@@ -8,7 +8,7 @@ const loginService = async (req, res) => {
   logger.info("body service: "+JSON.stringify(req.body) , { method: "loginServiceOdoo" });
   try {
     await validateFields(req.body);
-    let endpointLogin = `${config.odoo_service}/web/session/authenticate`;
+    let endpointLogin = `${config.odoo_service_login}`;
     logger.info("endpoint ext: "+endpointLogin , { method: "loginServiceOdoo" });
     let parameters = await prepareRequest(req.body);    
     let resultService = await axios.post(

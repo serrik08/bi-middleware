@@ -3,6 +3,7 @@ const axios = require("axios");
 const config = require("../../util/config");
 const logger = require("../../util/logger");
 const connection = require("../../dataAccess/mongoConnection");
+const { assign } = require("underscore");
 
 const projectsService = async (req, res) => {
   logger.info("begin", { method: "projectsServiceOdoo" });
@@ -11,7 +12,7 @@ const projectsService = async (req, res) => {
   });
   try {
     await validateFields(req.body);
-    let endpointLogin = `${config.odoo_service}/api/v1/demo/project.project`;
+    let endpointLogin = `${config.odoo_service}/project.project`;
     logger.info("endpoint ext: " + endpointLogin, {
       method: "projectsServiceOdoo",
     });
@@ -61,7 +62,11 @@ const getprojectsService = async (req, res) => {
   logger.info("body service: " + JSON.stringify(req.body), { method: "getprojectsService"  });
   try {
     let projects =  await connection.getDocuments("projects");
-    let result =  projects
+
+    let result = await addStagesToProject(projects);    
+ 
+    //console.log(stages);
+    //let result =  projects
     logger.info("Result: "+JSON.stringify(result), { method: "getprojectsService" });
     logger.info("end", { method: "getprojectsService" });
     return result;
@@ -74,6 +79,16 @@ const getprojectsService = async (req, res) => {
     return res_error;
   }
 };
+
+const addStagesToProject = async (projects) => {  
+  let stages =  await connection.getDocuments("stage");
+  projects.forEach(element => {
+    stage_name= {stage_name: stages.find(o => o.id === element.stage_id).name};
+    element = Object.assign(element,stage_name)
+    console.log(element.stage_id + '-'+JSON.stringify( stages[element.stage_id]));
+  });
+  return projects;
+}
 
 const validateFields = (body) => {
   if (body.userOdoo === undefined || body.tokenOdoo === undefined)

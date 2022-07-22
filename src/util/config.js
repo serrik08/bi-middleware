@@ -2,6 +2,7 @@ require('dotenv').config();
 
 module.exports = {
   odoo_service: process.env.ODOO_SERVICE,
+  odoo_service_login: process.env.ODOO_SERVICE_LOGIN,
   odoo_db: process.env.ODOO_DB,
   odoo_app: process.env.ODOO_APP,
   port: process.env.PORT,
