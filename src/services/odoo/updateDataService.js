@@ -3,6 +3,7 @@ const axios = require("axios");
 const config = require("../../util/config");
 const logger = require("../../util/logger");
 const connection = require("../../dataAccess/mongoConnection");
+const { result } = require("underscore");
 
 const updatedataService = async (req, res) => {
   logger.info("begin", { method: "updatedataService" });
@@ -17,9 +18,10 @@ const updatedataService = async (req, res) => {
     let tasks = await getTasks(auth);
     let users = await getUsers(auth);
     let stage = await getStage(auth);
+    let tag = await getTags(auth);
 
     await clearData();
-    await saveData(projects=projects ,tasks=tasks ,users=users,stage=stage);
+    await saveData(projects=projects ,tasks=tasks ,users=users,stage=stage,tag=tag);
 
     let result = {
       projects: projects.length,
@@ -42,7 +44,7 @@ const updatedataService = async (req, res) => {
 const getProjects = async (auth) => {
   let endpointLogin = `${config.odoo_service}/project.project`;
   logger.info("endpoint ext: " + endpointLogin, { method: "getProjects" });
-  result = await axios.get(endpointLogin, { auth: auth });
+  let result = await axios.get(endpointLogin, { auth: auth });
   logger.info("response ext: " + JSON.stringify(result.data), { method: "getProjects" });
   return result.data;
 };
@@ -50,15 +52,15 @@ const getProjects = async (auth) => {
 const getTasks = async (auth) => {
   let endpointLogin = `${config.odoo_service}/project.task`;
   logger.info("endpoint ext: " + endpointLogin, { method: "getTasks" });
-  result = await axios.get(endpointLogin, { auth: auth });
+  let result = await axios.get(endpointLogin, { auth: auth });
   logger.info("response ext: " + JSON.stringify(result.data), { method: "getTasks" });
   return result.data;
-};
+}; 
 
 const getUsers = async (auth) => {
   let endpointLogin = `${config.odoo_service}/res.users`;
   logger.info("endpoint ext: " + endpointLogin, { method: "getUsers" });
-  result = await axios.get(endpointLogin, { auth: auth });
+  let result = await axios.get(endpointLogin, { auth: auth });
   logger.info("response ext: " + JSON.stringify(result.data), { method: "getUsers" });
   return result.data;
 };
@@ -66,8 +68,16 @@ const getUsers = async (auth) => {
 const getStage = async (auth) => {
   let endpointLogin = `${config.odoo_service}/project.project.stage`;
   logger.info("endpoint ext: " + endpointLogin, { method: "getStage" });
-  result = await axios.get(endpointLogin, { auth: auth });
+  let result = await axios.get(endpointLogin, { auth: auth });
   logger.info("response ext: " + JSON.stringify(result.data), { method: "getStage" });
+  return result.data;
+};
+
+const getTags = async (auth) => {
+  let endpointLogin = `${config.odoo_service}/project.tags`;
+  logger.info("endpoint ext: " + endpointLogin, { method: "getTags" });
+  let result = await axios.get(endpointLogin, { auth: auth });
+  logger.info("response ext: " + JSON.stringify(result.data), { method: "getTags" });
   return result.data;
 };
 
@@ -85,11 +95,12 @@ const clearData = async () => {
   await connection.clearData("stage");
 }
 
-const saveData = async (projects=projects, tasks=tasks, users=users,stage=stage) => {
+const saveData = async (projects=projects, tasks=tasks, users=users,stage=stage,tag=tag) => {
   await connection.saveMultiDocument("projects",projects);
   await connection.saveMultiDocument("tasks",tasks);
   await connection.saveMultiDocument("users",users);
   await connection.saveMultiDocument("stage",stage);
+  await connection.saveMultiDocument("tag",tag);
 }
 
 const validateFields = (body) => {

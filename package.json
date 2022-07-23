@@ -1,7 +1,7 @@
 {
     "name": "router",
     "version": "1.0.0",
-    "description": "Router for service payments",
+    "description": "Router for service",
     "author": "jhtrigo@bg.com.bo",
     "main": "src/app.js",
     "scripts": {
