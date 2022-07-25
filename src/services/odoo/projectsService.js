@@ -38,8 +38,8 @@ const projectsService = async (req, res) => {
         errMsg: "",
         data: {
           success: false,
-          description: "no data saved"
-        }
+          description: "no data saved",
+        },
       };
     else
       result = await connection.saveMultiDocument("projects", filteredResult);
@@ -61,81 +61,89 @@ const projectsService = async (req, res) => {
 
 const getprojectsService = async (req, res) => {
   logger.info("begin", { method: "getprojectsService" });
-  logger.info("body service: " + JSON.stringify(req.body), { method: "getprojectsService"  });
+  logger.info("body service: " + JSON.stringify(req.body), {
+    method: "getprojectsService",
+  });
   let result;
   try {
-    let projects =  await connection.getDocuments("projects");
+    let projects = await connection.getDocuments("projects");
 
     result = await addStagesToProject(projects);
     result = await addEmployeeToProject(projects);
     result = formatDateOnProject(projects);
     result = await addTagsToProject(projects);
     result = await addTasksToProject(projects);
- 
-    logger.info("Result: "+JSON.stringify(result), { method: "getprojectsService" });
+
+    logger.info("Result: " + JSON.stringify(result), {
+      method: "getprojectsService",
+    });
     logger.info("end", { method: "getprojectsService" });
     return result;
   } catch (error) {
     let res_error = {
       errCode: errorConstants.codeError,
-      errMsg: error.message
+      errMsg: error.message,
     };
     logger.error(JSON.stringify(res_error), { method: "getprojectsService" });
     return res_error;
   }
 };
 
-const addStagesToProject = async (projects) => {  
-  let stages =  await connection.getDocuments("stage");
-  projects.forEach(element => {
-    stage_name= {stage_name: stages.find(o => o.id === element.stage_id).name};
-    element = Object.assign(element,stage_name)
+const addStagesToProject = async (projects) => {
+  let stages = await connection.getDocuments("stage");
+  projects.forEach((element) => {
+    stage_name = {
+      stage_name: stages.find((o) => o.id === element.stage_id).name,
+    };
+    element = Object.assign(element, stage_name);
   });
   return projects;
-}
+};
 
 const addEmployeeToProject = async (projects) => {
-  let employees =  await connection.getDocuments("users");
-  projects.forEach(element => {
-    employee = {employee: employees.find(o => o.id === element.id)};
-    element = Object.assign(element,employee)
+  let employees = await connection.getDocuments("users");
+  projects.forEach((element) => {
+    employee = { employee: employees.find((o) => o.id === element.id) };
+    element = Object.assign(element, employee);
   });
   return projects;
-}
+};
 
 const addTagsToProject = async (projects) => {
-  let tagsList =  await connection.getDocuments("tag");
-  projects.forEach(element => {
-    let tags=[];
-    element.tag_ids.forEach( tag_id => {
-      tags.push(tagsList.find(o => o.id === tag_id));
+  let tagsList = await connection.getDocuments("tag");
+  projects.forEach((element) => {
+    let tags = [];
+    element.tag_ids.forEach((tag_id) => {
+      tags.push(tagsList.find((o) => o.id === tag_id));
     });
-    element = Object.assign(element,{tags})
+    element = Object.assign(element, { tags });
   });
   return projects;
-}
+};
 
 const addTasksToProject = async (projects) => {
-  let tasksList =  await connection.getDocuments("tasks");
-  projects.forEach(element => {
-    let tasks_ids=[];
-    element.tasks.forEach( task_id => {
-      tasks_ids.push(tasksList.find(o => o.id === task_id));
+  let tasksList = await connection.getDocuments("tasks");
+  projects.forEach((element) => {
+    let tasks_ids = [];
+    element.tasks.forEach((task_id) => {
+      tasks_ids.push(tasksList.find((o) => o.id === task_id));
     });
-    element = Object.assign(element,{tasks_ids})
+    element = Object.assign(element, { tasks_ids });
   });
   return projects;
-}
+};
 
 const formatDateOnProject = (projects) => {
-  projects.forEach(element => {
-    if (element.date !== undefined || element.date !== '')
-      element.date = element.date.substring(0,10);
-    if (element.date_start !== undefined || element.date_start !== '')
-      element.date_start = element.date_start.substring(0,10);
+  projects.forEach((element) => {
+    if (element.date !== undefined || element.date !== "")
+      element.date = element.date.substring(0, 10);
+    if (element.date_start !== undefined || element.date_start !== "")
+      element.date_start = element.date_start.substring(0, 10);
+    if (element.bi_real_date_finish !== undefined || element.bi_real_date_finish !== "")
+      element.bi_real_date_finish = element.bi_real_date_finish.substring(0, 10);
   });
   return projects;
-}
+};
 
 const validateFields = (body) => {
   if (body.userOdoo === undefined || body.tokenOdoo === undefined)
@@ -146,5 +154,5 @@ const validateFields = (body) => {
 
 module.exports = {
   projectsService: projectsService,
-  getprojectsService: getprojectsService
+  getprojectsService: getprojectsService,
 };

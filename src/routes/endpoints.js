@@ -126,6 +126,33 @@ router.post("/getprojects", verifyToken, async (req, res) => {
   });
 });
 
+router.post("/projectsperdate", verifyToken, async (req, res) => {
+  logger.info("begin", { method: "projectsperdate" });  
+  let jwtToken = getJwtToken(req.token||req.header('Authorization'));
+  jwt.verify(jwtToken, "bi-app", async (err, authData) => {
+    if (err) {
+      res.sendStatus(403);
+      logger.error(JSON.stringify({ err }), { method: "projectsperdate" });
+    } else {
+      let result;
+      console.log(authData);
+      try {
+        result = await container.resolve(req.body.serviceId).projectsPerDate(req, res);        
+        res.send(result);
+        logger.info("end", { method: "projectsperdate" });
+      } catch (error) {
+        console.log("error: ", error);
+        result = {
+          errCode: errorConstants.codeError,
+          errMsg: errorConstants.desError,
+        };
+        res.send(result);
+        logger.error(JSON.stringify({ result }), { method: "projectsperdate" });
+      }
+    }
+  });
+});
+
 // Verify token
 function verifyToken(req, res, next) {
   // Get auth header token

@@ -27,6 +27,11 @@ class OdooController {
     return result;
   }
 
+  async projectsPerDate(req, res) {
+    let result = await this.odooService.projectsPerDate(req, res);
+    return result;
+  }
+
 }
 
 module.exports = OdooController;
