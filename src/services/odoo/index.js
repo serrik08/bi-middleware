@@ -3,7 +3,12 @@
 const { loginService } = require("./loginService");
 const { projectsService, getprojectsService } = require("./projectsService");
 const { updatedataService } = require("./updateDataService");
-const { projectsPerDateService } = require("./chartsService");
+const {
+  projectsPerDateService,
+  percentOfTagsService,
+  tasksPerEmployee,
+  costPerDate,
+} = require("./chartsService");
 
 exports.login = async (req, res) => {
   return await loginService(req, res);
@@ -21,6 +26,18 @@ exports.projects = async (req, res) => {
   return await projectsService(req, res);
 };
 
-exports.projectsPerDate = async (req, res) =>{
-  return await projectsPerDateService(req, res)
+exports.chartProjectsPerDate = async (req, res) => {
+  return await projectsPerDateService(req, res);
+};
+
+exports.chartPercentOfTags = async (req, res) => {
+  return await percentOfTagsService(req, res);
+};
+
+exports.chartTasksPerEmployee = async (req, res) => {
+  return await tasksPerEmployee(req, res);
+};
+
+exports.chartCostPerDate = async (req, res) => {
+  return await costPerDate(req, res);
 };

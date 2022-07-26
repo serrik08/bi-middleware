@@ -126,20 +126,20 @@ router.post("/getprojects", verifyToken, async (req, res) => {
   });
 });
 
-router.post("/projectsperdate", verifyToken, async (req, res) => {
-  logger.info("begin", { method: "projectsperdate" });  
+router.post("/chartprojectsperdate", verifyToken, async (req, res) => {
+  logger.info("begin", { method: "chartprojectsperdate" });  
   let jwtToken = getJwtToken(req.token||req.header('Authorization'));
   jwt.verify(jwtToken, "bi-app", async (err, authData) => {
     if (err) {
       res.sendStatus(403);
-      logger.error(JSON.stringify({ err }), { method: "projectsperdate" });
+      logger.error(JSON.stringify({ err }), { method: "chartprojectsperdate" });
     } else {
       let result;
       console.log(authData);
       try {
-        result = await container.resolve(req.body.serviceId).projectsPerDate(req, res);        
+        result = await container.resolve(req.body.serviceId).chartProjectsPerDate(req, res);        
         res.send(result);
-        logger.info("end", { method: "projectsperdate" });
+        logger.info("end", { method: "chartprojectsperdate" });
       } catch (error) {
         console.log("error: ", error);
         result = {
@@ -147,7 +147,87 @@ router.post("/projectsperdate", verifyToken, async (req, res) => {
           errMsg: errorConstants.desError,
         };
         res.send(result);
-        logger.error(JSON.stringify({ result }), { method: "projectsperdate" });
+        logger.error(JSON.stringify({ result }), { method: "chartprojectsperdate" });
+      }
+    }
+  });
+});
+
+router.post("/chartpercentoftags", verifyToken, async (req, res) => {
+  logger.info("begin", { method: "chartpercentoftags" });  
+  let jwtToken = getJwtToken(req.token||req.header('Authorization'));
+  jwt.verify(jwtToken, "bi-app", async (err, authData) => {
+    if (err) {
+      res.sendStatus(403);
+      logger.error(JSON.stringify({ err }), { method: "chartpercentoftags" });
+    } else {
+      let result;
+      console.log(authData);
+      try {
+        result = await container.resolve(req.body.serviceId).chartPercentOfTags(req, res);        
+        res.send(result);
+        logger.info("end", { method: "chartpercentoftags" });
+      } catch (error) {
+        console.log("error: ", error);
+        result = {
+          errCode: errorConstants.codeError,
+          errMsg: errorConstants.desError,
+        };
+        res.send(result);
+        logger.error(JSON.stringify({ result }), { method: "chartpercentoftags" });
+      }
+    }
+  });
+});
+
+router.post("/charttasksperemployee", verifyToken, async (req, res) => {
+  logger.info("begin", { method: "charttasksperemployee" });  
+  let jwtToken = getJwtToken(req.token||req.header('Authorization'));
+  jwt.verify(jwtToken, "bi-app", async (err, authData) => {
+    if (err) {
+      res.sendStatus(403);
+      logger.error(JSON.stringify({ err }), { method: "charttasksperemployee" });
+    } else {
+      let result;
+      console.log(authData);
+      try {
+        result = await container.resolve(req.body.serviceId).chartTasksPerEmployee(req, res);        
+        res.send(result);
+        logger.info("end", { method: "charttasksperemployee" });
+      } catch (error) {
+        console.log("error: ", error);
+        result = {
+          errCode: errorConstants.codeError,
+          errMsg: errorConstants.desError,
+        };
+        res.send(result);
+        logger.error(JSON.stringify({ result }), { method: "charttasksperemployee" });
+      }
+    }
+  });
+});
+router.post("/chartcostperdate", verifyToken, async (req, res) => {
+  logger.info("begin", { method: "chartcostperdate" });  
+  let jwtToken = getJwtToken(req.token||req.header('Authorization'));
+  jwt.verify(jwtToken, "bi-app", async (err, authData) => {
+    if (err) {
+      res.sendStatus(403);
+      logger.error(JSON.stringify({ err }), { method: "chartcostperdate" });
+    } else {
+      let result;
+      console.log(authData);
+      try {
+        result = await container.resolve(req.body.serviceId).chartCostPerDate(req, res);        
+        res.send(result);
+        logger.info("end", { method: "chartcostperdate" });
+      } catch (error) {
+        console.log("error: ", error);
+        result = {
+          errCode: errorConstants.codeError,
+          errMsg: errorConstants.desError,
+        };
+        res.send(result);
+        logger.error(JSON.stringify({ result }), { method: "chartcostperdate" });
       }
     }
   });
@@ -179,22 +259,6 @@ function getJwtToken(tokenBearer) {
     return tokenBearer[0]
   return tokenBearer[1]
 }
-
-// router.post("/projects", async (req, res) => {
-//   let result;
-//   try {
-//     result = await container
-//       .resolve(req.body.data.serviceId)
-//       .projects(req, res);
-//   } catch (error) {
-//     console.log("error: ", error);
-//     result = {
-//       errCode: errorConstants.codeError,
-//       errMsg: errorConstants.desError,
-//     };
-//   }
-//   res.send(result);
-// });
 
 router.post("/test", async (req, res) => {
   let result;

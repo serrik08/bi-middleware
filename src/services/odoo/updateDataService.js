@@ -93,6 +93,7 @@ const clearData = async () => {
   await connection.clearData("tasks");
   await connection.clearData("users");
   await connection.clearData("stage");
+  await connection.clearData("tag");
 }
 
 const saveData = async (projects=projects, tasks=tasks, users=users,stage=stage,tag=tag) => {
