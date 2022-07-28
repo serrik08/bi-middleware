@@ -1,4 +1,4 @@
-const odooService = require('../services/odoo/index')
+const odooService = require("../services/odoo/index");
 
 class OdooController {
   // We are using constructor injection.
@@ -31,22 +31,26 @@ class OdooController {
     let result = await this.odooService.chartProjectsPerDate(req, res);
     return result;
   }
-  
+
   async chartPercentOfTags(req, res) {
     let result = await this.odooService.chartPercentOfTags(req, res);
     return result;
   }
-  
+
   async chartTasksPerEmployee(req, res) {
     let result = await this.odooService.chartTasksPerEmployee(req, res);
     return result;
   }
-  
+
   async chartCostPerDate(req, res) {
     let result = await this.odooService.chartCostPerDate(req, res);
     return result;
   }
 
+  async getEmployees(req, res) {
+    let result = await this.odooService.chartGetEmployees(req, res);
+    return result;
+  }
 }
 
 module.exports = OdooController;

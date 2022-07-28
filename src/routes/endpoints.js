@@ -232,6 +232,32 @@ router.post("/chartcostperdate", verifyToken, async (req, res) => {
     }
   });
 });
+router.post("/getemployees", verifyToken, async (req, res) => {
+  logger.info("begin", { method: "getemployees" });  
+  let jwtToken = getJwtToken(req.token||req.header('Authorization'));
+  jwt.verify(jwtToken, "bi-app", async (err, authData) => {
+    if (err) {
+      res.sendStatus(403);
+      logger.error(JSON.stringify({ err }), { method: "getemployees" });
+    } else {
+      let result;
+      console.log(authData);
+      try {
+        result = await container.resolve(req.body.serviceId).getEmployees(req, res);        
+        res.send(result);
+        logger.info("end", { method: "getemployees" });
+      } catch (error) {
+        console.log("error: ", error);
+        result = {
+          errCode: errorConstants.codeError,
+          errMsg: errorConstants.desError,
+        };
+        res.send(result);
+        logger.error(JSON.stringify({ result }), { method: "getemployees" });
+      }
+    }
+  });
+});
 
 // Verify token
 function verifyToken(req, res, next) {
