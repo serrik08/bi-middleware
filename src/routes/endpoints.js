@@ -259,6 +259,33 @@ router.post("/getemployees", verifyToken, async (req, res) => {
   });
 });
 
+router.post("/getkpierp", verifyToken, async (req, res) => {
+  logger.info("begin", { method: "getkpierp" });  
+  let jwtToken = getJwtToken(req.token||req.header('Authorization'));
+  jwt.verify(jwtToken, "bi-app", async (err, authData) => {
+    if (err) {
+      res.sendStatus(403);
+      logger.error(JSON.stringify({ err }), { method: "getkpierp" });
+    } else {
+      let result;
+      console.log(authData);
+      try {
+        result = await container.resolve(req.body.serviceId).getKpiErp(req, res);        
+        res.send(result);
+        logger.info("end", { method: "getkpierp" });
+      } catch (error) {
+        console.log("error: ", error);
+        result = {
+          errCode: errorConstants.codeError,
+          errMsg: errorConstants.desError,
+        };
+        res.send(result);
+        logger.error(JSON.stringify({ result }), { method: "getkpierp" });
+      }
+    }
+  });
+});
+
 // Verify token
 function verifyToken(req, res, next) {
   // Get auth header token

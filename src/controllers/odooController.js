@@ -48,7 +48,12 @@ class OdooController {
   }
 
   async getEmployees(req, res) {
-    let result = await this.odooService.chartGetEmployees(req, res);
+    let result = await this.odooService.getEmployees(req, res);
+    return result;
+  }
+  
+  async getKpiErp(req, res) {
+    let result = await this.odooService.getKpiErp(req, res);
     return result;
   }
 }

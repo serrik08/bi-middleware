@@ -73,6 +73,8 @@ const getprojectsService = async (req, res) => {
     result = formatDateOnProject(projects);
     result = await addTagsToProject(projects);
     result = await addTasksToProject(projects);
+    result = getRemainingTimePercent(projects);
+    result = getColorDateAndCost(projects);
 
     logger.info("Result: " + JSON.stringify(result), {
       method: "getprojectsService",
@@ -88,6 +90,40 @@ const getprojectsService = async (req, res) => {
     return res_error;
   }
 };
+const getColorDateAndCost = (projects) => {
+  let colorDateFinish,colorCost;
+  projects.forEach(p => {
+    if (new Date(p.bi_real_date_finish) > new Date(p.date)){
+      colorDateFinish=1;
+    }else colorDateFinish=3;
+    if (p.bi_cost_final > p.bi_cost_planning) colorCost=1;
+    else colorCost=3;
+    let objdatecolor = {
+      colorDateFinish: colorDateFinish,
+      colorCost:colorCost
+    }
+    p = Object.assign(p, objdatecolor);
+  })
+  return projects;
+}
+
+const getRemainingTimePercent = (projects) => {
+  let percent,color_remaining_hours;
+  projects.forEach(p => {
+    percent = ((p.remaining_hours * 100 ) / (p.total_timesheet_time+p.remaining_hours));
+    if (percent>0) {
+      percent = 100 - percent;
+      color_remaining_hours = 3;
+    } else color_remaining_hours = 1;
+    percent = parseInt(percent);
+    let objPercent = { 
+      percent_remaining_hours: (percent>0)? percent:percent*-1,
+      color_remaining_hours: color_remaining_hours
+    }
+    p = Object.assign(p, objPercent);
+  })
+  return projects;
+}
 
 const addStagesToProject = async (projects) => {
   let stages = await connection.getDocuments("stage");

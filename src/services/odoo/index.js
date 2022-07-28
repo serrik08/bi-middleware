@@ -4,6 +4,7 @@ const { loginService } = require("./loginService");
 const { projectsService, getprojectsService } = require("./projectsService");
 const { getEmployeesService } = require("./employeeService");
 const { updatedataService } = require("./updateDataService");
+const { getKpiErpService } = require("./kpiService")
 const {
   projectsPerDateService,
   percentOfTagsService,
@@ -43,6 +44,10 @@ exports.chartCostPerDate = async (req, res) => {
   return await costPerDate(req, res);
 };
 
-exports.chartGetEmployees = async (req, res) => {
+exports.getEmployees = async (req, res) => {
   return await getEmployeesService(req, res);
+};
+
+exports.getKpiErp = async (req, res) => {
+  return await getKpiErpService(req, res);
 };

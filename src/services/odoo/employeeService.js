@@ -15,10 +15,6 @@ const getEmployeesService = async (req, res) => {
 
     result = await addProjects(users);
     result = await addStagesToProject(users);
-    // result = await addEmployeeToProject(projects);
-    // result = formatDateOnProject(projects);
-    // result = await addTagsToProject(projects);
-    // result = await addTasksToProject(projects);
 
     logger.info("Result: " + JSON.stringify(users), {
       method: "getEmployeesService",
