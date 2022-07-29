@@ -139,14 +139,14 @@ const addStagesToProject = async (projects) => {
 const addEmployeeToProject = async (projects) => {
   let employees = await connection.getDocuments("users");
   projects.forEach((element) => {
-    employee = { employee: employees.find((o) => o.id === element.id) };
+    employee = { employee: employees.find((o) => o.id === element.user_id) };
     element = Object.assign(element, employee);
   });
   return projects;
 };
 
 const addTagsToProject = async (projects) => {
-  let tagsList = await connection.getDocuments("tag");
+  let tagsList = await connection.getDocuments("tagProject");
   projects.forEach((element) => {
     let tags = [];
     element.tag_ids.forEach((tag_id) => {

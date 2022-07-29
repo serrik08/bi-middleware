@@ -5,6 +5,7 @@ const errorConstants = require("../util/errorConstants");
 const OdooController = require("../controllers/odooController");
 const router = Router();
 const logger = require("../util/logger");
+const config = require("../util/config");
 
 const jwt = require("jsonwebtoken");
 
@@ -26,7 +27,7 @@ router.post("/login", async (req, res) => {
     if (result.errCode === "0") {
       // Create JWT with user odoo response for authentication
       let token = await jwt.sign({ user: result.user }, "bi-app", {
-        expiresIn: "30m",
+        expiresIn: config.jwt_expire_time,
       });
       res.json({ token });
       logger.info(JSON.stringify({ token }), { method: "login" });

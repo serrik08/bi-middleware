@@ -62,7 +62,7 @@ const getKpiErp = async(title,collection) => {
     title:title,
     pastQuarter: {quarter: (pastQuarter==0)?currentYear-1:currentYear+'.Q'+(parseInt(pastQuarter)+1), qty: countListQuarter[1]},
     currentQuarter: {quarter: currentYear+'.Q'+(parseInt(currentQuarter)+1),qty: countListQuarter[0]},
-    percent: percent,
+    percent: percent.toFixed(2),
     colorPercent:colorPercent
   }
 };

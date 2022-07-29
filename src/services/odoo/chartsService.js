@@ -4,6 +4,7 @@ const config = require("../../util/config");
 const logger = require("../../util/logger");
 const connection = require("../../dataAccess/mongoConnection");
 
+//chart
 const projectsPerDateService = async (req, res) => {
   logger.info("begin", { method: "projectsPerDateService" });
   logger.info("body service: " + JSON.stringify(req.body), {
@@ -72,6 +73,8 @@ const getDateTasks = (task) => {
   arrDate = [...arrDate].sort();
   return arrDate;
 };
+
+//chart
 const percentOfTagsService = async (req, res) => {
   logger.info("begin", { method: "percentOfTagsService" });
   logger.info("body service: " + JSON.stringify(req.body), {
@@ -80,7 +83,7 @@ const percentOfTagsService = async (req, res) => {
   let result;
   try {
     let projects = await connection.getDocuments("projects");
-    let tags = await connection.getDocuments("tag");
+    let tags = await connection.getDocuments("tagProject");
     let arrTags = getArrTags(projects);
     let arrCountTags = getNumberOfTags((tags = tags), (arrTags = arrTags));
     let labesTag = getLabelTags(tags);
@@ -140,6 +143,7 @@ const arrWithoutDuplicates = (arr) => {
   return newArr;
 };
 
+//chart
 const getTasksPerEmployees = (employess, arrDateProjects, tasks) => {
   // res = [{label:employe1,data:[2,3,3]},{label:employe2,data:[2,3,3]},...]
   let tasksTemp;
@@ -149,6 +153,7 @@ const getTasksPerEmployees = (employess, arrDateProjects, tasks) => {
   let result = [];
   employess.forEach((employee) => {
     let counterList = [];
+    let flag= false;
     arrDateProjects.forEach((date) => {
       counter = 0;
       tasksTemp = tasks.filter((e) => e.date_deadline.substring(0, 7) === date);
@@ -160,12 +165,20 @@ const getTasksPerEmployees = (employess, arrDateProjects, tasks) => {
       userInTask.sort();
       counter = userInTask.filter((u) => u === employee.id).length;
       counterList.push(counter);
+      flag = counter>0;
     });
-    objTask = { label: employee.name, data: counterList};
-    result.push(objTask);
+    if (flag) {
+      objTask = { label: employee.name, data: counterList};
+      result.push(objTask);
+    }
   });
   return result;
 };
+const getFinishTasks = (tasks,taskStage) => {
+  let idtaskStageFinish = taskStage.filter(e => e.is_closed)[0].id;
+  let result = tasks.filter(e => e.stage_id == idtaskStageFinish);
+  return result;
+}
 
 const tasksPerEmployee = async (req, res) => {
   logger.info("begin", { method: "tasksPerEmployee" });
@@ -175,6 +188,8 @@ const tasksPerEmployee = async (req, res) => {
   try {
     let employess = await connection.getDocuments("users");
     let tasks = await connection.getDocuments("tasks");
+    let taskStage = await connection.getDocuments("taskStage");
+    tasks = getFinishTasks(tasks,taskStage);
     let arrDateProjects = getDateTasks(tasks);
     arrDateProjects = arrWithoutDuplicates(arrDateProjects);
     let dataTask = getTasksPerEmployees(employess, arrDateProjects, tasks);
@@ -223,6 +238,7 @@ const getCostReal = (projects, arrDateProjects) => {
   return {label: "Costo real", data:dataCost}
 }
 
+//chart
 const getCostPerProjects = (projects, arrDateProjects) => {
   let costPlanning = getCostPlanning(projects, arrDateProjects);
   let costReal = getCostReal(projects, arrDateProjects);
