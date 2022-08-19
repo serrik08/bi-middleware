@@ -10,21 +10,20 @@ const loginService = async (req, res) => {
     await validateFields(req.body);
     let endpointLogin = `${config.odoo_service_login}`;
     logger.info("endpoint ext: "+endpointLogin , { method: "loginServiceOdoo" });
-    let parameters = await prepareRequest(req.body);    
+    let parameters = await prepareRequest(req.body);
     let resultService = await axios.post(
       endpointLogin,
       parameters
     );
-    logger.info("response ext: "+JSON.stringify(resultService.data) , { method: "loginServiceOdoo" });
+    //logger.info("response ext: "+JSON.stringify(resultService.data) , { method: "loginServiceOdoo" });
     let result = prepareResponse(resultService);   
     logger.info("response service: "+JSON.stringify(result) , { method: "loginServiceOdoo" });
     logger.info("end", { method: "loginServiceOdoo" });
     return result;
   } catch (error) {
-    console.log(error);
     let res_error = {
-      errCode: errorConstants.codeError,
-      errMsg: error.message,
+      errCode: errorConstants.ERR1003.codeError,
+      errMsg: errorConstants.ERR1003.desError + error.message,
       data: [],
     };
     logger.error(JSON.stringify(res_error), { method: "loginServiceOdoo" });
@@ -61,10 +60,13 @@ const prepareResponse = (res) => {
       result.errCode = errorConstants.ERR1002.codeError;
       result.errMsg = errorConstants.ERR1002.desError;
       Object.assign(result, { data: [] });
-    } else {
+    } else if (response.error.data.message === "Too many login failures, please wait a bit before trying again.") {
+      result.errCode = errorConstants.ERR1004.codeError;
+      result.errMsg = errorConstants.ERR1004.desError;
+      Object.assign(result, { data: [] });
+    }else {
       result.errCode = errorConstants.ERR1003.codeError;
-      result.errMsg =
-        errorConstants.ERR1003.desError + response.error.data.message;
+      result.errMsg = errorConstants.ERR1003.desError + response.error.data.message;
       Object.assign(result, { data: [] });
     }
   } else {

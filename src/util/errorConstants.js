@@ -14,6 +14,11 @@ module.exports = {
     desError: 'Error del servicio externo: ',
   },
 
+  ERR1004: {
+    codeError: 'ERR1004',
+    desError: 'Demasiados fallos en el inicio de sesión, por favor, espere un poco antes de volver a intentarlo.',
+  },
+
   //Cuando el servicio no cuente con el endpoint solicitado
   noservice_codeError: 'MSJ1001',
   noservice_desError: 'El recurso solicitado no se encuentra implementado por el servicio externo',

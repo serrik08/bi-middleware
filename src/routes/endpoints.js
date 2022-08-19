@@ -51,23 +51,23 @@ router.post("/projects", verifyToken, async (req, res) => {
   let jwtToken = getJwtToken(req.token||req.header('Authorization'));
   jwt.verify(jwtToken, "bi-app", async (err, authData) => {
     if (err) {
-      res.sendStatus(403);
       logger.error(JSON.stringify({ err }), { method: "projects" });
+      res.sendStatus(401);
     } else {
       let result;
       console.log(authData);
       try {
-        result = await container.resolve(req.body.serviceId).projects(req, res);        
-        res.send(result);
+        result = await container.resolve(req.body.serviceId).projects(req, res);
         logger.info("end", { method: "projects" });
+        res.send(result);
       } catch (error) {
         console.log("error: ", error);
         result = {
           errCode: errorConstants.codeError,
           errMsg: errorConstants.desError,
         };
-        res.send(result);
         logger.error(JSON.stringify({ result }), { method: "projects" });
+        res.send(result);
       }
     }
   });
@@ -78,7 +78,7 @@ router.post("/updatedata", verifyToken, async (req, res) => {
   let jwtToken = getJwtToken(req.token||req.header('Authorization'));
   jwt.verify(jwtToken, "bi-app", async (err, authData) => {
     if (err) {
-      res.sendStatus(403);
+      res.sendStatus(401);
       logger.error(JSON.stringify({ err }), { method: "updatedata" });
     } else {
       let result;
@@ -105,7 +105,7 @@ router.post("/getprojects", verifyToken, async (req, res) => {
   let jwtToken = getJwtToken(req.token||req.header('Authorization'));
   jwt.verify(jwtToken, "bi-app", async (err, authData) => {
     if (err) {
-      res.sendStatus(403);
+      res.sendStatus(401);
       logger.error(JSON.stringify({ err }), { method: "getprojects" });
     } else {
       let result;
@@ -132,7 +132,7 @@ router.post("/chartprojectsperdate", verifyToken, async (req, res) => {
   let jwtToken = getJwtToken(req.token||req.header('Authorization'));
   jwt.verify(jwtToken, "bi-app", async (err, authData) => {
     if (err) {
-      res.sendStatus(403);
+      res.sendStatus(401);
       logger.error(JSON.stringify({ err }), { method: "chartprojectsperdate" });
     } else {
       let result;
@@ -159,7 +159,7 @@ router.post("/chartpercentoftags", verifyToken, async (req, res) => {
   let jwtToken = getJwtToken(req.token||req.header('Authorization'));
   jwt.verify(jwtToken, "bi-app", async (err, authData) => {
     if (err) {
-      res.sendStatus(403);
+      res.sendStatus(401);
       logger.error(JSON.stringify({ err }), { method: "chartpercentoftags" });
     } else {
       let result;
@@ -186,7 +186,7 @@ router.post("/charttasksperemployee", verifyToken, async (req, res) => {
   let jwtToken = getJwtToken(req.token||req.header('Authorization'));
   jwt.verify(jwtToken, "bi-app", async (err, authData) => {
     if (err) {
-      res.sendStatus(403);
+      res.sendStatus(401);
       logger.error(JSON.stringify({ err }), { method: "charttasksperemployee" });
     } else {
       let result;
@@ -212,7 +212,7 @@ router.post("/chartcostperdate", verifyToken, async (req, res) => {
   let jwtToken = getJwtToken(req.token||req.header('Authorization'));
   jwt.verify(jwtToken, "bi-app", async (err, authData) => {
     if (err) {
-      res.sendStatus(403);
+      res.sendStatus(401);
       logger.error(JSON.stringify({ err }), { method: "chartcostperdate" });
     } else {
       let result;
@@ -238,7 +238,7 @@ router.post("/getemployees", verifyToken, async (req, res) => {
   let jwtToken = getJwtToken(req.token||req.header('Authorization'));
   jwt.verify(jwtToken, "bi-app", async (err, authData) => {
     if (err) {
-      res.sendStatus(403);
+      res.sendStatus(401);
       logger.error(JSON.stringify({ err }), { method: "getemployees" });
     } else {
       let result;
@@ -265,7 +265,7 @@ router.post("/getkpierp", verifyToken, async (req, res) => {
   let jwtToken = getJwtToken(req.token||req.header('Authorization'));
   jwt.verify(jwtToken, "bi-app", async (err, authData) => {
     if (err) {
-      res.sendStatus(403);
+      res.sendStatus(401);
       logger.error(JSON.stringify({ err }), { method: "getkpierp" });
     } else {
       let result;
@@ -303,7 +303,7 @@ function verifyToken(req, res, next) {
     next();
   } else {
     // Forbidden
-    res.sendStatus(403);
+    res.sendStatus(401);
   }
 }
 

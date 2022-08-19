@@ -3,9 +3,6 @@ const axios = require("axios");
 const config = require("../../util/config");
 const logger = require("../../util/logger");
 const connection = require("../../dataAccess/mongoConnection");
-const { assign } = require("underscore");
-const { projects } = require(".");
-const { prepareResponseProjects } = require("./tasksService");
 
 const projectsService = async (req, res) => {
   logger.info("begin", { method: "projectsServiceOdoo" });
