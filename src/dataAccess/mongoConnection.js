@@ -2,6 +2,35 @@ const MongoClient = require("mongodb").MongoClient;
 const errorConstants = require("../util/errorConstants");
 const config = require("../util/config");
 
+exports.attemptUserLogin = async (user) => {
+  try {
+    const client = MongoClient(config.mongo_url, { useUnifiedTopology: true });
+    await client.connect();
+    const db = await client.db(config.mongo_db_name);
+    const collection = db.collection("users");
+    dbUser = await collection.findOne({ login: user });
+    var newvalues = { $set: { attemptLogin: dbUser.attemptLogin=== undefined?1:dbUser.attemptLogin+1 } };
+    await collection.updateOne({ login: user }, newvalues);
+    await client.close();
+    return newvalues.$set.attemptLogin;
+  } catch (e) {
+    throw new Error(e);
+  }
+};
+exports.resetAttemptUserLogin = async (user) => {
+  try {
+    const client = MongoClient(config.mongo_url, { useUnifiedTopology: true });
+    await client.connect();
+    const db = await client.db(config.mongo_db_name);
+    const collection = db.collection("users");
+    var newvalues = { $set: { attemptLogin: 0 } };
+    await collection.updateOne({ login: user }, newvalues);
+    await client.close();
+  } catch (e) {
+    throw new Error(e);
+  }
+}
+
 exports.saveMultiDocument = async (mongo_collection, data) => {
   try {
     const client = MongoClient(config.mongo_url, { useUnifiedTopology: true });
@@ -11,7 +40,7 @@ exports.saveMultiDocument = async (mongo_collection, data) => {
     await collection.insertMany(data);
     await client.close();
   } catch (e) {
-    throw new Error(e);;
+    throw new Error(e);
   }
 };
 
@@ -57,7 +86,7 @@ exports.getDocuments = async (mongo_collection) => {
     const collection = db.collection(mongo_collection);
     const doQuery = new Promise((resolve, reject) => {
       collection
-        .find({ }, { projection: { _id: 0 } })
+        .find({}, { projection: { _id: 0 } })
         .toArray(function (err, result) {
           res = result;
           resolve();

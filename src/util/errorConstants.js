@@ -8,15 +8,17 @@ module.exports = {
     codeError: 'ERR1002',
     desError: 'Acceso denegado, usuario o password incorrectos',
   },
-
   ERR1003: {
     codeError: 'ERR1003',
     desError: 'Error del servicio externo: ',
   },
-
   ERR1004: {
     codeError: 'ERR1004',
     desError: 'Demasiados fallos en el inicio de sesión, por favor, espere un poco antes de volver a intentarlo.',
+  },
+  ERR1005: {
+    codeError: 'ERR1005',
+    desError: 'Usuario no autorizado, Api Token incorrecto',
   },
 
   //Cuando el servicio no cuente con el endpoint solicitado

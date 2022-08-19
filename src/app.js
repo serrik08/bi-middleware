@@ -6,9 +6,22 @@ const logger = require("./util/logger");
 const swaggerUi = require("swagger-ui-express"),
   swaggerDocument = require("./swagger.json");
 
+const rateLimit = require("express-rate-limit");
+
+const limiter = rateLimit({
+  windowMs: 1 * 60 * 1000, // 1 minutes
+  max: config.limit_rate, // limit each IP to 100 requests per windowMs
+});
+
 class Server {
   constructor() {
     this.app = express();
+
+    // Initialize Limiter
+    
+    //  apply to all requests
+    this.app.use(limiter);
+
     this.port = config.port;
 
     // Middlewares
@@ -23,6 +36,8 @@ class Server {
     this.app.use(cors());
     // Lectura y parseo del body
     this.app.use(express.json());
+    // Rate limiter
+    //this.app.use(rateLimiterUsingThirdParty);
 
     // this.app.use(function (req, res, next) {
     //   res.header("Access-Control-Allow-Origin", config.odoo_app)
@@ -43,7 +58,9 @@ class Server {
     );
 
     this.app.listen(this.port, () => {
-      logger.info("Server running on port "+ this.port , { method: Object.values(this)[0].name });
+      logger.info("Server running on port " + this.port, {
+        method: Object.values(this)[0].name,
+      });
     });
   }
 }
