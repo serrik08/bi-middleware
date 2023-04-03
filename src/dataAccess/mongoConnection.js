@@ -9,7 +9,11 @@ exports.attemptUserLogin = async (user) => {
     const db = await client.db(config.mongo_db_name);
     const collection = db.collection("users");
     dbUser = await collection.findOne({ login: user });
-    var newvalues = { $set: { attemptLogin: dbUser.attemptLogin=== undefined?1:dbUser.attemptLogin+1 } };
+    if (dbUser == null) {
+      await collection.insertOne({'login':user,'attemptLogin':0});
+      dbUser = await collection.findOne({ login: user });
+    }
+    var newvalues = { $set: { attemptLogin: dbUser.attemptLogin === undefined ? 1 : dbUser.attemptLogin + 1 } };
     await collection.updateOne({ login: user }, newvalues);
     await client.close();
     return newvalues.$set.attemptLogin;
@@ -24,7 +28,10 @@ exports.resetAttemptUserLogin = async (user) => {
     const db = await client.db(config.mongo_db_name);
     const collection = db.collection("users");
     var newvalues = { $set: { attemptLogin: 0 } };
-    await collection.updateOne({ login: user }, newvalues);
+    let options = { upsert: true, returnOriginal: false };
+    //await collection.updateOne({ login: user }, newvalues);
+    //let newvalues = { $set: { attemptLogin: 0 } };
+    await collection.findOneAndUpdate({ login: user }, newvalues, options);
     await client.close();
   } catch (e) {
     throw new Error(e);
@@ -33,12 +40,14 @@ exports.resetAttemptUserLogin = async (user) => {
 
 exports.saveMultiDocument = async (mongo_collection, data) => {
   try {
-    const client = MongoClient(config.mongo_url, { useUnifiedTopology: true });
-    await client.connect();
-    const db = await client.db(config.mongo_db_name);
-    const collection = db.collection(mongo_collection);
-    await collection.insertMany(data);
-    await client.close();
+    if (data.length !== 0) {
+      const client = MongoClient(config.mongo_url, { useUnifiedTopology: true });
+      await client.connect();
+      const db = await client.db(config.mongo_db_name);
+      const collection = db.collection(mongo_collection);
+      await collection.insertMany(data);
+      await client.close();
+    }
   } catch (e) {
     throw new Error(e);
   }

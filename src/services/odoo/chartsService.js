@@ -112,7 +112,7 @@ const percentOfTagsService = async (req, res) => {
 const getArrTags = (projects) => {
   let arrTags = [];
   projects.forEach((element) => {
-    if (element.tag_ids.length !== 0) {
+    if (element.tag_ids.length !== 0 && element.stage_id !== 4) {
       element.tag_ids.forEach((tag) => {
         arrTags.push(tag);
       });
@@ -174,9 +174,10 @@ const getTasksPerEmployees = (employess, arrDateProjects, tasks) => {
   });
   return result;
 };
-const getFinishTasks = (tasks,taskStage) => {
-  let idtaskStageFinish = taskStage.filter(e => e.is_closed)[0].id;
-  let result = tasks.filter(e => e.stage_id == idtaskStageFinish);
+const getFinishTasks = (tasks) => {
+  //let idtaskStageFinish = taskStage.filter(e => e.is_closed)[0].id;
+  //let result = tasks.filter(e => e.stage_id == idtaskStageFinish);
+  let result = tasks.filter(e => e.is_closed)
   return result;
 }
 
@@ -189,10 +190,10 @@ const tasksPerEmployee = async (req, res) => {
     let employess = await connection.getDocuments("users");
     let tasks = await connection.getDocuments("tasks");
     let taskStage = await connection.getDocuments("taskStage");
-    tasks = getFinishTasks(tasks,taskStage);
+    tasks = getFinishTasks(tasks);
     let arrDateProjects = getDateTasks(tasks);
     arrDateProjects = arrWithoutDuplicates(arrDateProjects);
-    let dataTask = getTasksPerEmployees(employess, arrDateProjects, tasks);
+    let dataTask = getTasksPerEmployees(employess.filter(e => e.employee_id), arrDateProjects, tasks);
     logger.info("end", { method: "tasksPerEmployee" });
     return {
       type: "bar",

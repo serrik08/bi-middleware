@@ -11,16 +11,15 @@ const getEmployeesService = async (req, res) => {
   });
   let result;
   try {
-    let users = await connection.getDocuments("users");
+    let employees = await getEmployees()
+    result = await addProjects(employees);
+    result = await addStagesToProject(employees);
 
-    result = await addProjects(users);
-    result = await addStagesToProject(users);
-
-    logger.info("Result: " + JSON.stringify(users), {
+    logger.info("Result: " + JSON.stringify(employees), {
       method: "getEmployeesService",
     });
     logger.info("end", { method: "getEmployeesService" });
-    return users;
+    return employees;
   } catch (error) {
     let res_error = {
       errCode: errorConstants.codeError,
@@ -30,6 +29,13 @@ const getEmployeesService = async (req, res) => {
     return res_error;
   }
 };
+
+const getEmployees = async () => {
+  let users = await connection.getDocuments("users");
+  let employees = users.filter( user => user.employee_ids.length > 0);
+  return employees;
+};
+
 const addProjects = async (users) => {
   let projects = await connection.getDocuments("projects");
   let objProject;

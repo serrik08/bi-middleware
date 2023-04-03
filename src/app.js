@@ -33,7 +33,10 @@ class Server {
 
   middlewares() {
     // CORS
-    this.app.use(cors());
+    //this.app.use(cors());
+    this.app.use(cors({
+      origin: ['http://localhost:8069','http://localhost:8100','http://127.0.0.1:8069']
+    }));
     // Lectura y parseo del body
     this.app.use(express.json());
     // Rate limiter

@@ -15,21 +15,22 @@ const updatedataService = async (req, res) => {
 
     let projects = await getProjects(auth);
     let taskStage = await getTaskStage(auth);
-    let tasks = await getTasks(auth,taskStage);
+    let tasks = await getTasks(auth, taskStage);
     let users = await getUsers(auth);
+    let employees = await getEmployees(users);
     let stage = await getStage(auth);
     let tagProject = await getTagProject(auth);
     let tagTask = await getTaskTags(auth);
 
     await clearData();
-    await saveData(projects=projects ,tasks=tasks ,users=users,stage=stage,taskStage=taskStage,tagProject=tagProject,tagTask=tagTask);
+    await saveData(projects = projects, tasks = tasks, users = users, stage = stage, taskStage = taskStage, tagProject = tagProject, tagTask = tagTask);
 
     let result = {
       projects: projects.length,
       tasks: tasks.length,
-      users: users.length
+      users: employees.length
     }
-    logger.info("Result: "+JSON.stringify(result), { method: "updatedataService" });
+    logger.info("Result: " + JSON.stringify(result), { method: "updatedataService" });
     logger.info("end", { method: "updatedataService" });
     return result;
   } catch (error) {
@@ -56,22 +57,29 @@ const getTasks = async (auth, taskStage) => {
   let result = await axios.get(endpoint, { auth: auth });
   logger.info("response ext: " + JSON.stringify(result.data), { method: "getTasks" });
   let tasks = result.data;
-  taskStage.forEach( stage => {
+  taskStage.forEach(stage => {
     //let tasksFiltered = tasks.filter(e=>e.stage_id === stage.id);
     tasks.forEach(t => {
       if (t.stage_id === stage.id) {
         let stage_name = stage.name;
         let stage_color = 2;
-        if (stage_name==='Done') stage_color=3;
-        if (stage_name==='New') stage_color=1;
+        if (stage_name === 'Done') stage_color = 3;
+        if (stage_name === 'New') stage_color = 1;
         t = Object.assign(t, { stage_name });
         t = Object.assign(t, { stage_color });
       }
     });
   });
-  
+
   return tasks;
-}; 
+};
+
+const getEmployees = async (users) => {
+  logger.info(users, { method: "getEmployees" });
+  let employees = users.filter((e) => e.employee_id);
+  logger.info("response ext: " + JSON.stringify(employees), { method: "employees" });
+  return employees;
+};
 
 const getUsers = async (auth) => {
   let endpoint = `${config.odoo_service}/res.users`;
@@ -103,7 +111,7 @@ const getTagProject = async (auth) => {
   logger.info("endpoint ext: " + endpoint, { method: "getTagProject" });
   let result = await axios.get(endpoint, { auth: auth });
   logger.info("response ext: " + JSON.stringify(result.data), { method: "getTagProject" });
-  return result.data.filter(e=>!e.name.includes('(task)') );
+  return result.data.filter(e => !e.name.includes('(task)'));
 };
 
 const getTaskTags = async (auth) => {
@@ -111,7 +119,8 @@ const getTaskTags = async (auth) => {
   logger.info("endpoint ext: " + endpoint, { method: "getTaskTags" });
   let result = await axios.get(endpoint, { auth: auth });
   logger.info("response ext: " + JSON.stringify(result.data), { method: "getTaskTags" });
-  return result.data.filter(e=>e.name.includes('(task)') );
+  //return result.data.filter(e=>e.name.includes('(task)') );
+  return result.data;
 };
 
 const getAuth = (body) => {

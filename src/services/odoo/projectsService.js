@@ -15,12 +15,10 @@ const projectsService = async (req, res) => {
     logger.info("endpoint ext: " + endpointLogin, {
       method: "projectsServiceOdoo",
     });
-    let resultService = await axios.get(endpointLogin, {
-      auth: {
-        username: req.body.userOdoo,
-        password: req.body.tokenOdoo,
-      },
-    });
+    let auth = {
+      username: req.body.userOdoo, password: req.body.tokenOdoo,
+    };
+    let resultService = await axios.get(endpointLogin, {auth: auth});
     logger.info("response ext: " + JSON.stringify(resultService.data), {
       method: "projectsServiceOdoo",
     });
@@ -168,11 +166,11 @@ const addTasksToProject = async (projects) => {
 
 const formatDateOnProject = (projects) => {
   projects.forEach((element) => {
-    if (element.date !== undefined || element.date !== "")
+    if (element.date !== undefined && element.date !== "")
       element.date = element.date.substring(0, 10);
-    if (element.date_start !== undefined || element.date_start !== "")
+    if (element.date_start !== undefined && element.date_start !== "")
       element.date_start = element.date_start.substring(0, 10);
-    if (element.bi_real_date_finish !== undefined || element.bi_real_date_finish !== "")
+    if (element.bi_real_date_finish !== undefined && element.bi_real_date_finish !== "")
       element.bi_real_date_finish = element.bi_real_date_finish.substring(0, 10);
   });
   return projects;

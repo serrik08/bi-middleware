@@ -50,7 +50,7 @@ const getQarter = (month) => {
 const getKpiErp = async(title,collection) => {
   let objects = await connection.getDocuments(collection);
   let currentMonth = new Date().getMonth() + 1;
-  let currentYear = new Date().getFullYear();
+  let currentYear = new Date().getFullYear()-1;
   let currentQuarter = getQarter(currentMonth);
   let pastQuarter = currentQuarter !== 0 ? currentQuarter-1 : 3;
   console.log(pastQuarter,currentQuarter);
@@ -60,7 +60,7 @@ const getKpiErp = async(title,collection) => {
   let colorPercent = getColorPercent(percent);
   return {
     title:title,
-    pastQuarter: {quarter: (pastQuarter==0)?currentYear-1:currentYear+'.Q'+(parseInt(pastQuarter)+1), qty: countListQuarter[1]},
+    pastQuarter: {quarter: (pastQuarter==3)?currentYear-1:currentYear+'.Q'+(parseInt(pastQuarter)+1), qty: countListQuarter[1]},
     currentQuarter: {quarter: currentYear+'.Q'+(parseInt(currentQuarter)+1),qty: countListQuarter[0]},
     percent: percent.toFixed(2),
     colorPercent:colorPercent

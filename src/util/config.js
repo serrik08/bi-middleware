@@ -9,5 +9,6 @@ module.exports = {
   limit_rate: process.env.LIMIT_RATE,
   jwt_expire_time: process.env.JWT_EXPIRE_TIME,
   mongo_url: process.env.MONGO_URL,
-  mongo_db_name: process.env.MONGO_DB_NAME
+  mongo_db_name: process.env.MONGO_DB_NAME,
+  login_try: process.env.LOGIN_TRY
 };
