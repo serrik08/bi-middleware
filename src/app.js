@@ -22,6 +22,12 @@ class Server {
     //  apply to all requests
     this.app.use(limiter);
 
+    this.app.use(
+      '/api-docs',
+      swaggerUi.serve, 
+      swaggerUi.setup(swaggerDocument)
+    );
+
     this.port = config.port;
 
     // Middlewares
